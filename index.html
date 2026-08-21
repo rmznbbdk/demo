@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BetaGame - Giriş/Kayıt</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('aqw.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Verdana', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #auth, #register {
+      background: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      width: 300px;
+      position: fixed;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #auth {
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 10;
+    }
+
+    #register {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #register.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .title {
+      font-size: 2.5em;
+      color: #FFD700;
+      text-shadow: 2px 2px 5px #000;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 0.9em;
+      color: #FFD700;
+      text-shadow: 1px 1px 3px #000;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-group label {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 70%;
+      padding: 8px 30px 8px 40px;
+      border: 1px solid #666;
+      border-radius: 5px;
+      background: #333;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+      margin-left: 5px;
+    }
+
+    .save-label {
+      color: #fff;
+      font-size: 12px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    .login-button, .register-button {
+      background: #8B0000;
+      color: #fff;
+      border: 2px solid #FFD700;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 10px 0;
+      display: block;
+      width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .login-button:hover, .register-button:hover {
+      background: #A00000;
+    }
+
+    .or-divider {
+      color: #FFD700;
+      font-size: 1em;
+      margin: 10px 0;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    .facebook-button {
+      background: #3b5998;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 5px 0;
+      display: block;
+      width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .facebook-button:hover {
+      background: #4a69ad;
+    }
+
+    .create-account-button, .back-to-login {
+      background: #8B0000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 5px 0;
+      display: block;
+      width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .create-account-button:hover, .back-to-login:hover {
+      background: #A00000;
+    }
+
+    .links {
+      margin-top: 10px;
+      font-size: 0.8em;
+    }
+
+    .links a {
+      color: #FFD700;
+      text-decoration: none;
+      margin: 0 5px;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    .message-box {
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #FFD700;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+      color: #FFD700;
+      font-size: 0.9em;
+      text-shadow: 1px 1px 3px #000;
+      display: none;
+      position: relative;
+      z-index: 30;
+    }
+
+    .message-box.error {
+      color: #FF4040;
+    }
+
+    .message-box.success {
+      color: #40FF40;
+    }
+
+    .message-box button {
+      background: #8B0000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 0.8em;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .message-box button:hover {
+      background: #A00000;
+    }
+  </style>
+</head>
+<body>
+  <div id="auth">
+    <div class="title">BetaGame</div>
+    <div class="subtitle">New Release: Test Version</div>
+    <div id="login-message" class="message-box"></div>
+    <div class="input-group">
+      <label for="loginUsername"></label>
+      <input type="text" id="loginUsername" placeholder="Username" />
+      <input type="checkbox" id="saveUsername" />
+      <span class="save-label">Save</span>
+    </div>
+    <div class="input-group">
+      <label for="loginPassword"></label>
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <input type="checkbox" id="savePassword" />
+      <span class="save-label">Save</span>
+    </div>
+    <button class="login-button" onclick="login()">Login</button>
+    <div class="or-divider">OR</div>
+    <button class="facebook-button" onclick="showMessage('login-message', 'Facebook ile giriş şu anda desteklenmiyor.', 'error')">Connect with Facebook</button>
+    <button class="create-account-button" onclick="showRegister()">Create a free Account</button>
+    <div class="links">
+      <a href="#" onclick="showMessage('login-message', 'Şifremi unuttum özelliği şu anda desteklenmiyor.', 'error')">Forgot your password?</a> |
+      <a href="#" onclick="showMessage('login-message', 'Hesap yönetimi özelliği şu anda desteklenmiyor.', 'error')">Manage your account</a>
+    </div>
+  </div>
+
+  <div id="register">
+    <div class="title">BetaGame</div>
+    <div class="subtitle">Create a New Account</div>
+    <div id="register-message" class="message-box"></div>
+    <div class="input-group">
+      <label for="regUsername"></label>
+      <input type="text" id="regUsername" placeholder="Username" />
+    </div>
+    <div class="input-group">
+      <label for="regPassword"></label>
+      <input type="password" id="regPassword" placeholder="Password" />
+    </div>
+    <button class="register-button" onclick="register()">Register</button>
+    <button class="back-to-login" onclick="showLogin()">Back to Login</button>
+  </div>
+
+  <script>
+    function showMessage(elementId, message, type) {
+      const messageBox = document.getElementById(elementId);
+      messageBox.style.display = 'block';
+      messageBox.className = `message-box ${type}`; // Hata veya başarı sınıfı
+      messageBox.innerHTML = message + '<br><button onclick="hideMessage(\'' + elementId + '\')">Close</button>';
+      setTimeout(() => hideMessage(elementId), 5000); // 5 saniye sonra otomatik kapanır
+    }
+
+    function hideMessage(elementId) {
+      const messageBox = document.getElementById(elementId);
+      messageBox.style.display = 'none';
+    }
+
+    function showRegister() {
+      document.getElementById('auth').style.opacity = '0';
+      document.getElementById('auth').style.pointerEvents = 'none';
+      setTimeout(() => {
+        document.getElementById('register').classList.add('active');
+      }, 500); // Animasyon süresine uyum
+    }
+
+    function showLogin() {
+      document.getElementById('register').classList.remove('active');
+      setTimeout(() => {
+        document.getElementById('auth').style.opacity = '1';
+        document.getElementById('auth').style.pointerEvents = 'auto';
+      }, 500); // Animasyon süresine uyum
+    }
+
+    async function register() {
+      const username = document.getElementById('regUsername').value;
+      const password = document.getElementById('regPassword').value;
+      if (!username || !password) {
+        showMessage('register-message', 'Lütfen tüm alanları doldurun.', 'error');
+        return;
+      }
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+          const data = await res.text();
+          showMessage('register-message', data, 'success');
+          setTimeout(() => {
+            showLogin(); // Kayıt başarılıysa login ekranına geri dön
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+          }, 2000); // Mesajı gösterdikten 2 saniye sonra login ekranına dön
+        } else {
+          const error = await res.text();
+          showMessage('register-message', error, 'error');
+        }
+      } catch (error) {
+        console.error('Kayıt hatası:', error);
+        showMessage('register-message', 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+      const saveUsername = document.getElementById('saveUsername').checked;
+      const savePassword = document.getElementById('savePassword').checked;
+
+      if (!username || !password) {
+        showMessage('login-message', 'Lütfen tüm alanları doldurun.', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('x', data.x);
+            localStorage.setItem('y', data.y);
+            localStorage.setItem('username', username);
+            if (saveUsername) localStorage.setItem('savedUsername', username);
+            if (savePassword) localStorage.setItem('savedPassword', password);
+            window.location.href = '/game.html';
+          } else {
+            showMessage('login-message', 'Giriş başarısız', 'error');
+          }
+        } else {
+          const error = await res.text();
+          showMessage('login-message', error, 'error');
+        }
+      } catch (error) {
+        console.error('Giriş hatası:', error);
+        showMessage('login-message', 'Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+      }
+    }
+
+    // Sayfaya yüklendiğinde kaydedilmiş bilgileri kontrol et
+    window.onload = function() {
+      const savedUsername = localStorage.getItem('savedUsername');
+      const savedPassword = localStorage.getItem('savedPassword');
+      if (savedUsername) {
+        document.getElementById('loginUsername').value = savedUsername;
+        document.getElementById('saveUsername').checked = true;
+      }
+      if (savedPassword) {
+        document.getElementById('loginPassword').value = savedPassword;
+        document.getElementById('savePassword').checked = true;
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+[
+  {
+    "username": "mm",
+    "password": "$2b$10$tcTQuvtZ3xU5sgZyP.rmweAYnLiIwycJuY6cTKvmsN2ZB5tux6lHC",
+    "x": 439.00001721283866,
+    "y": 576,
+    "gold": 0
+  },
+  {
+    "username": "rr",
+    "password": "$2b$10$/0Bfiz2XXOSTOqLL3R/PpehA23EvAcwLT9hpXeHY6KbFpRITCuznu",
+    "x": 663.9395323589872,
+    "y": 498.74466161653095,
+    "gold": 1
+  },
+  {
+    "username": "zz",
+    "password": "$2b$10$HIG3Y7BJ2UTafM9p9ihi2OJhbcNvu5jhSrYOEb78FWk0BNgSk/YiG",
+    "x": 698.7732257908593,
+    "y": 466.2010739108554,
+    "gold": 2
+  },
+  {
+    "username": "aa",
+    "password": "$2b$10$ejxaPtyTtWjhgCe2fwweS.Uh4XLrJ.PN.y6vHbicjdYq9qfqiQrj.",
+    "x": 597.9405760737615,
+    "y": 474.87256987266073,
+    "gold": 1
+  }
+]

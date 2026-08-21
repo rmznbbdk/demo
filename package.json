@@ -1,0 +1,45 @@
+{
+  "name": "my-mmorpg",
+  "version": "1.0.0",
+  "description": "2D MMORPG with 3D-like perspective",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "com.example.mymmorpg",
+    "productName": "My MMORPG",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "*.html",
+      "*.css",
+      "*.js",
+      "public/**/*",
+      "assets/**/*",
+      "images/**/*",
+      "*.png",
+      "*.jpg",
+      "*.jpeg",
+      "*.gif",
+      "*.ico",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}

@@ -1,0 +1,494 @@
+[
+  {
+    "username": "a",
+    "password": "$2b$10$FOqjvRefpaIHXxSSMlAJR.zlARU9C4zCtwL3dYKfOIHYtTUwndmLW",
+    "x": 835.0260580493723,
+    "y": 524.6653712316279,
+    "gold": 6537,
+    "level": 100,
+    "bossKills": 24,
+    "totalBossKills": 24,
+    "pvpEnabled": false,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 4,
+        "heal": 30
+      },
+      {
+        "id": "ring_power",
+        "name": "ring_power",
+        "type": "accessory",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 5,
+        "defense": 0,
+        "heal": 0
+      },
+      {
+        "id": "sword_legend",
+        "name": "sword_legend",
+        "type": "weapon",
+        "rarity": "legendary",
+        "quantity": 1,
+        "attackPower": 55,
+        "defense": 0,
+        "heal": 0
+      },
+      {
+        "id": "amulet_guard",
+        "name": "amulet_guard",
+        "type": "accessory",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6,
+        "heal": 0
+      },
+      {
+        "id": "ring_legend",
+        "name": "ring_legend",
+        "type": "accessory",
+        "rarity": "legendary",
+        "quantity": 1,
+        "attackPower": 12,
+        "defense": 0,
+        "heal": 0
+      },
+      {
+        "id": "sword_fire",
+        "name": "sword_fire",
+        "type": "weapon",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 35,
+        "defense": 0,
+        "heal": 0
+      },
+      {
+        "id": "potion_large",
+        "name": "potion_large",
+        "type": "potion",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 0,
+        "heal": 70
+      }
+    ],
+    "equipped": {
+      "weapon": "sword",
+      "armor": "character3",
+      "accessory": "ring_legend"
+    }
+  },
+  {
+    "username": "b",
+    "password": "$2b$10$LwInNR69GRWxdE0tBp1VQuN.DxNdfxD2UH3mOINJgkTSezDioUjiC",
+    "x": 702.0380753291835,
+    "y": 526.5966759271212,
+    "gold": 64,
+    "level": 1,
+    "bossKills": 6,
+    "totalBossKills": 6,
+    "pvpEnabled": true,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 2,
+        "heal": 30
+      }
+    ],
+    "equipped": {
+      "weapon": "sword",
+      "armor": "character2",
+      "accessory": null
+    }
+  },
+  {
+    "username": "c",
+    "password": "$2b$10$IoHC9pbsXRABahYSv/kpfuRcEut1GBXbmh0woFXqpHs1jdQ0DctQK",
+    "x": 879.2758850485482,
+    "y": 447.3369267322518,
+    "gold": 24,
+    "level": 1,
+    "bossKills": 1,
+    "totalBossKills": 1,
+    "pvpEnabled": false,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 2,
+        "heal": 30
+      }
+    ],
+    "equipped": {
+      "weapon": "sword2",
+      "armor": "character2",
+      "accessory": null
+    }
+  },
+  {
+    "username": "n",
+    "password": "$2b$10$SGVdmhESzGltczlpI.CHCOi2M7piTyUugKiqEz2NukC1sz.Nlizl6",
+    "x": 847.9927336381857,
+    "y": 545.2104896577346,
+    "gold": 0,
+    "level": 1,
+    "bossKills": 0,
+    "totalBossKills": 0,
+    "pvpEnabled": false,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 2,
+        "heal": 30
+      }
+    ],
+    "equipped": {
+      "weapon": null,
+      "armor": null,
+      "accessory": null
+    }
+  },
+  {
+    "username": "x",
+    "password": "$2b$10$/b1u37rgP0yAZ.Qg0wdeXO7cCauus20ASCzY4oViagw9W54Zm9mjy",
+    "x": 795.1620912816253,
+    "y": 444.0896552310614,
+    "gold": 0,
+    "level": 1,
+    "bossKills": 0,
+    "totalBossKills": 0,
+    "pvpEnabled": false,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 2,
+        "heal": 30
+      }
+    ],
+    "equipped": {
+      "weapon": null,
+      "armor": null,
+      "accessory": null
+    }
+  },
+  {
+    "username": "v",
+    "password": "$2b$10$iC9sva7YmpjZlwq4NmOVk.4uoYCtNGwcLhTC/ZTiy39DeV/QURMP2",
+    "x": 892.6802042319575,
+    "y": 497.1897413864934,
+    "gold": 0,
+    "level": 1,
+    "bossKills": 0,
+    "totalBossKills": 0,
+    "pvpEnabled": false,
+    "claimedQuests": [],
+    "inventory": [
+      {
+        "id": "sword",
+        "name": "sword",
+        "type": "weapon",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 10,
+        "defense": 0
+      },
+      {
+        "id": "sword2",
+        "name": "sword2",
+        "type": "weapon",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 20,
+        "defense": 0
+      },
+      {
+        "id": "character1",
+        "name": "character1",
+        "type": "armor",
+        "rarity": "common",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 3
+      },
+      {
+        "id": "character2",
+        "name": "character2",
+        "type": "armor",
+        "rarity": "rare",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 6
+      },
+      {
+        "id": "character3",
+        "name": "character3",
+        "type": "armor",
+        "rarity": "epic",
+        "quantity": 1,
+        "attackPower": 0,
+        "defense": 9
+      },
+      {
+        "id": "potion_small",
+        "name": "potion_small",
+        "type": "potion",
+        "rarity": "common",
+        "quantity": 2,
+        "heal": 30
+      }
+    ],
+    "equipped": {
+      "weapon": null,
+      "armor": null,
+      "accessory": null
+    }
+  }
+]
