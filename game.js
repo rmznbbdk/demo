@@ -304,6 +304,141 @@ const BOSS_MAPS = [
   
 ];
 const BOSS_MAP_IDS = BOSS_MAPS.map(m => m.id);
+
+// ---------------- YÜRÜNEBİLİR ALAN (sadece yollar) ----------------
+// Bir haritaya kısıt eklemek için WALK_AREAS içine o haritanın id'sini
+// yazman yeterli. Koordinatlar ORİJİNAL harita resminin piksel değerleridir
+// (boss_map2.png = 1429x736). Oyun ekranına oranlanarak otomatik çevrilir,
+// yani ekran boyutu değişse de doğru çalışır.
+//   area    = karakterin ayaklarının basabileceği yol/zemin poligonu
+//   blocked = yol içindeki engeller (çalı, kaya, fener, şeker bastonu)
+// WALK_AREAS'ta olmayan haritalarda hiçbir kısıt yoktur.
+// refW/refH = o haritanın orijinal resim boyutu.
+// 'main' = lobi (maps.png), 'boss1' = boss_map.png, 'boss2' = boss_map2.png
+const WALK_AREAS = {
+  main: {
+    refW: 1373, refH: 691,
+    area: [
+      [0,691],[0,540],[200,515],[240,475],[612,470],[612,425],[700,418],
+      [735,430],[800,405],[880,402],[1000,412],[1090,445],[1090,548],
+      [1373,548],[1373,691]
+    ],
+    blocked: []
+  },
+  boss1: {
+    refW: 1439, refH: 720,
+    area: [
+      [0,720],[0,455],[180,448],[350,440],[650,432],[700,445],[760,500],
+      [850,500],[940,492],[1130,492],[1200,472],[1439,472],[1439,720]
+    ],
+    blocked: []
+  },
+  boss2: {
+    refW: 1429, refH: 736,
+    area: [
+      [0,736],[0,376],[230,398],[305,390],[305,290],[332,266],[420,244],
+      [500,228],[545,222],[565,238],[690,240],[700,268],[800,272],[830,270],
+      [830,332],[930,340],[958,366],[1210,366],[1290,372],[1429,372],[1429,736]
+    ],
+    blocked: [
+      [[75,310],[185,310],[185,405],[80,405]],                                   // sol çalı
+      [[605,395],[725,395],[730,490],[700,522],[630,520],[605,480]],             // orta çalı
+      [[500,510],[615,510],[615,545],[500,545]],                                 // büyük kaya
+      [[175,522],[252,522],[252,546],[175,546]],                                 // sol kaya
+      [[1085,330],[1160,330],[1160,392],[1085,392]],                             // fener
+      [[1145,300],[1195,300],[1195,432],[1148,432]],                             // şeker bastonu
+      [[1175,340],[1290,340],[1295,466],[1175,470]]                              // sağ çalı
+    ]
+  }
+};
+
+function pointInPolygon(px, py, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+    if (((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function getWalkMapImage(mapId) {
+  return mapId === 'main' ? mainMap : bossMapImages[mapId];
+}
+
+function hasWalkLimit(mapId) {
+  return !!(WALK_AREAS[mapId] && getWalkMapImage(mapId));
+}
+
+// Oyun koordinatındaki (gx, gy) noktası yol üzerinde mi?
+function isWalkableAt(mapId, gx, gy) {
+  const cfg = WALK_AREAS[mapId];
+  const img = getWalkMapImage(mapId);
+  if (!cfg || !img) return true; // kısıt yoksa her yer serbest
+  const left = img.x - img.displayWidth / 2;
+  const top = img.y - img.displayHeight / 2;
+  const ix = ((gx - left) / img.displayWidth) * cfg.refW;
+  const iy = ((gy - top) / img.displayHeight) * cfg.refH;
+  if (!pointInPolygon(ix, iy, cfg.area)) return false;
+  for (const b of cfg.blocked) {
+    if (pointInPolygon(ix, iy, b)) return false;
+  }
+  return true;
+}
+
+// Karakterin "ayak" noktası (sprite merkezinin biraz altı).
+function getPlayerFeet(px, py) {
+  const h = player ? player.displayHeight : 0;
+  return { x: px, y: py + h / 2 - 4 };
+}
+
+function canPlayerStandAt(px, py) {
+  const f = getPlayerFeet(px, py);
+  return isWalkableAt(currentMap, f.x, f.y);
+}
+
+// Karakter yasak bölgedeyse (ışınlanma/yeniden doğma vb.) en yakın yola taşır.
+function snapPlayerToWalkable() {
+  if (canPlayerStandAt(player.x, player.y)) return false;
+  for (let r = 6; r <= 700; r += 6) {
+    for (let a = 0; a < 360; a += 15) {
+      const nx = player.x + Math.cos(Phaser.Math.DegToRad(a)) * r;
+      const ny = player.y + Math.sin(Phaser.Math.DegToRad(a)) * r;
+      if (canPlayerStandAt(nx, ny)) {
+        player.x = nx;
+        player.y = ny;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Hedefe doğru yürütür ama yol dışına çıkacaksa engeller (kenar boyunca
+// kayabilir, hiç ilerleyemiyorsa durur).
+function movePlayerToward(scene, speed) {
+  if (!hasWalkLimit(currentMap)) {
+    scene.physics.moveTo(player, target.x, target.y, speed);
+    return;
+  }
+  const dx = target.x - player.x;
+  const dy = target.y - player.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len;
+  const L = 8; // ileriye bakma mesafesi (px)
+
+  if (canPlayerStandAt(player.x + ux * L, player.y + uy * L)) {
+    scene.physics.moveTo(player, target.x, target.y, speed);
+  } else if (Math.abs(dx) > 4 && canPlayerStandAt(player.x + Math.sign(dx) * L, player.y)) {
+    player.setVelocity(Math.sign(dx) * speed, 0);
+  } else if (Math.abs(dy) > 4 && canPlayerStandAt(player.x, player.y + Math.sign(dy) * L)) {
+    player.setVelocity(0, Math.sign(dy) * speed);
+  } else {
+    player.setVelocity(0);
+    target = null;
+  }
+}
 let bossMapImages = {};   // mapId -> Phaser Image (harita görseli)
 let bossDataMap = {};     // mapId -> son alınan boss verisi (health, vs.)
 
@@ -2233,12 +2368,19 @@ function handlePlayerDeath(scene, token) {
 function update() {
   updateSkillCooldownsUI(this);
 
+  // Yol dışında kalmışsa (ışınlanma, yeniden doğma vb.) en yakın yola al.
+  if (player && !isDead && hasWalkLimit(currentMap)) {
+    if (snapPlayerToWalkable()) {
+      socket.emit('move', { x: player.x, y: player.y });
+    }
+  }
+
   if (player && target && !isDead && !isAnyPanelOpen()) {
     const speed = 200;
     const distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
 
     if (distance > 4) {
-      this.physics.moveTo(player, target.x, target.y, speed);
+      movePlayerToward(this, speed);
       socket.emit('move', { x: player.x, y: player.y });
       const playerHeight = player.displayHeight;
       healthBar.setPosition(player.x, player.y - playerHeight / 2 - 12);
