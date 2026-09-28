@@ -27,6 +27,169 @@ let config = {
   }
 };
 
+// ---- Yükleme ekranı (AQW tarzı) ----
+// Siyah zemin, ortada oyun adı, etrafında dönen kırmızı halkalar ve altta
+// "Yükleniyor %XX" yazısı. Üç durumda otomatik açılır:
+//   1) Sunucu seçilip oyuna girilirken (varlıklar + sunucuya bağlanma)
+//   2) Haritalar arası ışınlanırken (teleportTo)
+//   3) Bağlantı koptuğunda / yeniden bağlanırken
+// Oyun adını değiştirmek için aşağıdaki iki sabiti düzenle.
+const LOADING_TITLE_SMALL = 'Macera';
+const LOADING_TITLE_BIG = 'DÜNYASI';
+
+let loadingEl = null;
+let loadingPct = 0;
+let loadingLabel = 'Yükleniyor';
+let loadingIndeterminate = false;
+let loadingTickTimer = null;
+let loadingHideTimer = null;
+let loadingInitialDone = false;
+
+function ensureLoadingScreen() {
+  if (loadingEl && document.body.contains(loadingEl)) return loadingEl;
+
+  if (!document.getElementById('loading-screen-style')) {
+    const st = document.createElement('style');
+    st.id = 'loading-screen-style';
+    st.textContent = `
+      #loading-screen { position:absolute; inset:0; z-index:99999; background:#000;
+        display:none; align-items:center; justify-content:center; opacity:1;
+        transition:opacity .35s ease; user-select:none; }
+      #loading-screen.ls-fixed { position:fixed; }
+      #loading-screen.ls-show { display:flex; }
+      #loading-screen.ls-fade { opacity:0; }
+      #loading-screen .ls-box { position:relative; width:min(46vmin,420px); height:min(46vmin,420px);
+        display:flex; align-items:center; justify-content:center; }
+      #loading-screen svg { position:absolute; inset:0; width:100%; height:100%; }
+      #loading-screen .ls-ring-a { transform-origin:50% 50%; animation:ls-spin-a 2.6s linear infinite; }
+      #loading-screen .ls-ring-b { transform-origin:50% 50%; animation:ls-spin-b 1.8s linear infinite; }
+      #loading-screen .ls-ring-c { transform-origin:50% 50%; animation:ls-spin-a 1.2s linear infinite; }
+      @keyframes ls-spin-a { to { transform:rotate(360deg); } }
+      @keyframes ls-spin-b { to { transform:rotate(-360deg); } }
+      #loading-screen .ls-center { position:relative; text-align:center; z-index:2; }
+      #loading-screen .ls-small { font:italic 700 clamp(16px,3.4vmin,30px) Georgia,'Times New Roman',serif;
+        color:#e9d9a6; letter-spacing:1px; text-shadow:0 2px 3px #000; line-height:1; }
+      #loading-screen .ls-big { font:900 clamp(26px,6.2vmin,54px) Georgia,'Times New Roman',serif;
+        letter-spacing:2px; line-height:1.05;
+        background:linear-gradient(#fff3b8,#d9a93a 55%,#8a5f14);
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        filter:drop-shadow(0 2px 2px #000); }
+      #loading-screen .ls-line { height:1px; margin:6px auto 8px; width:100%;
+        background:linear-gradient(90deg,transparent,#8a7a4a,transparent); }
+      #loading-screen .ls-text { font:700 clamp(11px,1.8vmin,15px) Arial,Helvetica,sans-serif;
+        color:#fff; letter-spacing:.5px; }
+      #loading-screen.ls-indet .ls-text { animation:ls-pulse 1.1s ease-in-out infinite; }
+      @keyframes ls-pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    `;
+    document.head.appendChild(st);
+  }
+
+  const el = document.createElement('div');
+  el.id = 'loading-screen';
+  el.innerHTML = `
+    <div class="ls-box">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <g class="ls-ring-a"><circle cx="100" cy="100" r="92" stroke="#a60f0a" stroke-width="18"
+          stroke-dasharray="330 248" stroke-linecap="butt"/></g>
+        <g class="ls-ring-b"><circle cx="100" cy="100" r="66" stroke="#8c0d09" stroke-width="10"
+          stroke-dasharray="230 185" stroke-linecap="butt"/></g>
+        <g class="ls-ring-c"><circle cx="100" cy="100" r="44" stroke="#6f0a07" stroke-width="6"
+          stroke-dasharray="110 167" stroke-linecap="butt"/></g>
+      </svg>
+      <div class="ls-center">
+        <div class="ls-small"></div>
+        <div class="ls-big"></div>
+        <div class="ls-line"></div>
+        <div class="ls-text"></div>
+      </div>
+    </div>`;
+  el.querySelector('.ls-small').textContent = LOADING_TITLE_SMALL;
+  el.querySelector('.ls-big').textContent = LOADING_TITLE_BIG;
+
+  // Oyun çerçevesinin içine koy (yoksa tüm sayfayı kapla).
+  const parent = document.getElementById('game-frame') || document.getElementById('game-container');
+  if (parent) {
+    if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+    parent.appendChild(el);
+  } else {
+    el.classList.add('ls-fixed');
+    document.body.appendChild(el);
+  }
+  loadingEl = el;
+  return el;
+}
+
+function renderLoadingText() {
+  if (!loadingEl) return;
+  const t = loadingEl.querySelector('.ls-text');
+  if (!t) return;
+  t.textContent = loadingIndeterminate ? `${loadingLabel}...` : `${loadingLabel} %${Math.round(loadingPct)}`;
+  loadingEl.classList.toggle('ls-indet', loadingIndeterminate);
+}
+
+function clearLoadingTimers() {
+  if (loadingTickTimer) { clearInterval(loadingTickTimer); loadingTickTimer = null; }
+  if (loadingHideTimer) { clearTimeout(loadingHideTimer); loadingHideTimer = null; }
+}
+
+// opts: { pct: başlangıç yüzdesi, indeterminate: yüzde göstermeden "..." göster }
+function showLoadingScreen(label, opts) {
+  opts = opts || {};
+  const el = ensureLoadingScreen();
+  clearLoadingTimers();
+  loadingLabel = label || 'Yükleniyor';
+  loadingPct = opts.pct || 0;
+  loadingIndeterminate = !!opts.indeterminate;
+  el.classList.remove('ls-fade');
+  el.classList.add('ls-show');
+  renderLoadingText();
+}
+
+function setLoadingProgress(p) {
+  if (!loadingEl || !loadingEl.classList.contains('ls-show')) return;
+  loadingPct = Math.max(loadingPct, Math.min(100, p));
+  renderLoadingText();
+}
+
+function hideLoadingScreen() {
+  if (!loadingEl) return;
+  clearLoadingTimers();
+  loadingEl.classList.add('ls-fade');
+  const el = loadingEl;
+  loadingHideTimer = setTimeout(() => {
+    el.classList.remove('ls-show');
+    el.classList.remove('ls-fade');
+    loadingHideTimer = null;
+  }, 360);
+}
+
+// Işınlanma gibi süresi belli geçişler: yüzde 0'dan 100'e akar, sonra kapanır.
+function playLoadingTransition(label, ms) {
+  showLoadingScreen(label || 'Işınlanıyor', { pct: 0 });
+  const total = ms || 900;
+  const step = 40;
+  let elapsed = 0;
+  loadingTickTimer = setInterval(() => {
+    elapsed += step;
+    setLoadingProgress((elapsed / total) * 100);
+    if (elapsed >= total) {
+      clearInterval(loadingTickTimer);
+      loadingTickTimer = null;
+      setLoadingProgress(100);
+      loadingHideTimer = setTimeout(hideLoadingScreen, 150);
+    }
+  }, step);
+}
+
+// İlk giriş tamamlandı (sunucudan oyuncu verisi geldi) → ekranı kapat.
+function finishInitialLoading() {
+  if (loadingInitialDone) return;
+  loadingInitialDone = true;
+  clearLoadingTimers();
+  setLoadingProgress(100);
+  loadingHideTimer = setTimeout(hideLoadingScreen, 250);
+}
+
 let game;
 let SELECTED_SERVER_ID = null;
 
@@ -84,6 +247,10 @@ function chooseServer(roomId) {
   if (overlay) overlay.classList.add('hidden');
   const chatContainer = document.getElementById('chat-container');
   if (chatContainer) chatContainer.style.display = '';
+  loadingInitialDone = false;
+  showLoadingScreen('Yükleniyor', { pct: 0 });
+  // Güvenlik: ne olursa olsun 25 sn sonra ekran takılı kalmasın.
+  setTimeout(() => { if (!loadingInitialDone) finishInitialLoading(); }, 25000);
   startGame();
 }
 
@@ -443,6 +610,8 @@ let bossMapImages = {};   // mapId -> Phaser Image (harita görseli)
 let bossDataMap = {};     // mapId -> son alınan boss verisi (health, vs.)
 
 function preload() {
+  // Yükleme ekranındaki yüzde: varlıklar %90'a kadar, kalan sunucu bağlantısı.
+  this.load.on('progress', (v) => setLoadingProgress(Math.round(v * 90)));
   this.load.image('main_map', 'maps.png');
 
   // Tek karakter: c1/c2/c3 = kılıçsız yürüme efekti kareleri (c1 = duruş/idle).
@@ -563,6 +732,20 @@ function create() {
   }
 
   socket = io({ query: { server: SELECTED_SERVER_ID || 'oda1' } });
+
+  // Bağlantı durumu: kopunca / yeniden bağlanırken yükleme ekranı göster.
+  let wasDisconnected = false;
+  socket.on('connect', () => {
+    if (!loadingInitialDone) setLoadingProgress(95); // ilk giriş: oyuncu verisi bekleniyor
+    if (wasDisconnected) { wasDisconnected = false; hideLoadingScreen(); }
+  });
+  socket.on('disconnect', () => {
+    wasDisconnected = true;
+    showLoadingScreen('Bağlantı koptu, yeniden bağlanılıyor', { indeterminate: true });
+  });
+  socket.on('connect_error', () => {
+    if (loadingInitialDone) showLoadingScreen('Sunucuya bağlanılıyor', { indeterminate: true });
+  });
 
   mainMap = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'main_map').setVisible(true);
   coverImage(mainMap, GAME_WIDTH, GAME_HEIGHT);
@@ -702,6 +885,7 @@ function create() {
     // Bu, sadece keyboard.enabled'ı kapatmaktan daha güvenilir bir çözüm.
     chatInput.addEventListener('keydown', (e) => {
       e.stopPropagation();
+      if (e.key === 'Escape') chatInput.blur(); // ESC ile de sohbetten çıkılır
     });
     chatInput.addEventListener('focus', () => {
       isChatFocused = true;
@@ -724,6 +908,7 @@ function create() {
         lastChatAt = now;
         socket.emit('chatMessage', msg);
         chatInput.value = '';
+        chatInput.blur(); // Mesaj gidince imleç sohbetten çıksın, karakter hemen kontrol edilebilsin
       }
     });
   }
@@ -731,6 +916,7 @@ function create() {
   socket.emit('join', { token });
 
   socket.on('currentPlayers', (players) => {
+    finishInitialLoading();
     Object.keys(otherPlayers).forEach(id => removeOtherPlayer(id));
     Object.keys(players).forEach((id) => {
       if (id === socket.id) {
@@ -990,6 +1176,13 @@ function create() {
   });
 
   socket.on('chatMessage', (data) => {
+    // Sadece aynı haritadaki oyuncuların mesajlarını göster (başka haritadakiler görünmesin).
+    if (data && data.id && data.id !== socket.id) {
+      const sameMap = (data.currentMap !== undefined && data.currentMap !== null)
+        ? data.currentMap === currentMap
+        : !!otherPlayers[data.id];
+      if (!sameMap) return;
+    }
     const chatMessagesPanel = document.getElementById('chat-messages');
     if (chatMessagesPanel) {
       const messageDiv = document.createElement('div');
@@ -1098,6 +1291,7 @@ function destroyBossSprite() {
 // Tüm harita gösterimini (lobi + 5 boss haritası) tek yerden yöneten
 // ışınlanma fonksiyonu. Lobi için 'main', boss haritaları için 'boss1'..'boss5'.
 function teleportTo(scene, destId) {
+  playLoadingTransition('Işınlanıyor', 900);
   currentMap = destId;
   const isBoss = BOSS_MAP_IDS.includes(destId);
 

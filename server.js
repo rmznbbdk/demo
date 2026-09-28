@@ -745,13 +745,20 @@ io.on('connection', (socket) => {
       return;
     }
     chatLastSent[socket.id] = now;
-    // Sadece kendi odasına sohbet
-    emitToRoom(socket.serverRoom, 'chatMessage', {
+    // Sadece kendi odasındaki VE aynı haritadaki oyunculara sohbet
+    const chatPayload = {
       id: socket.id,
       username: players[socket.id].username,
       message: text,
       x: players[socket.id].x,
-      y: players[socket.id].y
+      y: players[socket.id].y,
+      currentMap: players[socket.id].currentMap
+    };
+    Object.keys(players).forEach(pid => {
+      const other = players[pid];
+      if (other.serverRoom === socket.serverRoom && other.currentMap === players[socket.id].currentMap) {
+        io.to(pid).emit('chatMessage', chatPayload);
+      }
     });
   });
 
